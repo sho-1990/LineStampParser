@@ -6,11 +6,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import com.example.shsato.linestampparser.R
+import com.example.shsato.linestampparser.viewparts.LineWebViewController
 
 /**
  * Lineにアクセスするフラグメント
  */
 class LineFragment : Fragment() {
+
+
+    private val mController: LineWebViewController = LineWebViewController()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,6 +28,7 @@ class LineFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
+        mController.init(view)
     }
 
     companion object {
