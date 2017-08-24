@@ -22,6 +22,11 @@ class LineFragment : Fragment() {
         return inflater!!.inflate(R.layout.fragment_line, container, false)
     }
 
+    override fun onActivityCreated(savedInstanceState: Bundle?) {
+        super.onActivityCreated(savedInstanceState)
+
+    }
+
     companion object {
 
         /**
