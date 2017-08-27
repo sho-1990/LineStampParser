@@ -20,15 +20,11 @@ class LineWebViewController : View.OnClickListener, ILineWebViewController {
         val URL: String = "https://store.line.me"
 
         val JS_GET_STAMP: String = "javascript:" +
-                "var sec = document.getElementById('FnStickerDetail');" +
-                "if (sec.childElementCount > 2) {" +
-                "  var d = sec.lastElementChild;" +
-                "  var e = d.firstElementChild;" +
-                "  console.log(d.tagName);" +
-                "  console.log(e.tagName);" +
-                "  android.getStampUrl(e.toString());" +
-                "}"
-
+                "var sec = document.getElementsByClassName('mdCMN04ImgBox');" +
+                "var d = sec[0].lastElementChild;" +
+                "d = d.lastElementChild;" +
+                "var e = d.firstElementChild;" +
+                "android.getStampUrl(e.src);"
 
         class JsRelay {
             @JavascriptInterface
