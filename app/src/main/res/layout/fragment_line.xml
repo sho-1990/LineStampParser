@@ -1,15 +1,21 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-              android:orientation="vertical"
-             tools:context="com.example.shsato.linestampparser.fragment.LineFragment">
-
-    <WebView
-        android:id="@+id/line_web_view"
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="70"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="com.example.shsato.linestampparser.fragment.LineFragment">
 
-    <include layout="@layout/webview_footer"/>
-</LinearLayout>
+        <WebView
+            android:id="@+id/line_web_view"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="70"/>
+
+        <include layout="@layout/webview_footer"/>
+    </LinearLayout>
+    <include layout="@layout/modal_add_stamp"/>
+</RelativeLayout>

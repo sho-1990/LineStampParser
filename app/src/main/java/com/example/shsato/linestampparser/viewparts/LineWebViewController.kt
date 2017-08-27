@@ -3,10 +3,15 @@ package com.example.shsato.linestampparser.viewparts
 import android.annotation.SuppressLint
 import android.graphics.Bitmap
 import android.os.Build
-import android.support.v7.widget.Toolbar
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.*
+import android.widget.Button
+import android.widget.ImageView
+import com.bumptech.glide.Glide
 import com.example.shsato.linestampparser.R
 
 /**
@@ -23,18 +28,15 @@ open class LineWebViewController : View.OnClickListener, ILineWebViewController 
                 "d = d.lastElementChild;" +
                 "var e = d.firstElementChild;" +
                 "android.getStampUrl(e.src);"
-
-        class JsRelay {
-            @JavascriptInterface
-            fun getStampUrl(imageUrl: String?) {
-                Log.d("test", imageUrl!!.toString())
-            }
-        }
     }
 
     private var mWebView: WebView? = null
 
     private var mButtonGetUrl: View? = null
+
+    private var mModalStamp: ViewGroup? = null
+
+    private var mSelectStampUrl: String? = null
 
     open fun willReceivedTitle(view: WebView?, title: String?) {}
 
@@ -44,6 +46,7 @@ open class LineWebViewController : View.OnClickListener, ILineWebViewController 
         root?.let {
             mWebView      = it.findViewById(R.id.line_web_view) as WebView
             mButtonGetUrl = it.findViewById(R.id.button_get_url)
+            mModalStamp = it.findViewById(R.id.modal_stamp) as ViewGroup
         }
 
         mButtonGetUrl?.setOnClickListener(this)
@@ -52,10 +55,43 @@ open class LineWebViewController : View.OnClickListener, ILineWebViewController 
             WebView.setWebContentsDebuggingEnabled(true)
         }
 
-        mWebView?.let {
+        setupModal(mModalStamp)
+        setupWebView(mWebView)
 
-            it.settings.javaScriptEnabled = true
-            it.setWebViewClient(object : WebViewClient() {
+    }
+
+    override fun back() {
+        mWebView?.let {
+            if (it.canGoBack()) {
+                it.goBack()
+            }
+        }
+    }
+
+    override fun onClick(view: View?) {
+        when(view?.id) {
+            R.id.button_get_url -> {
+                mWebView?.loadUrl(JS_GET_STAMP)
+            }
+        }
+    }
+
+    private fun setupModal(modal: ViewGroup?) {
+        modal?.let {
+            it.visibility = View.GONE
+            val close: Button = it.findViewById(R.id.button_close) as Button
+            close.setOnClickListener {
+                view: View? ->
+                it.visibility = View.GONE
+            }
+        }
+    }
+
+    @SuppressLint("SetJavaScriptEnabled")
+    private fun setupWebView(webView: WebView?) {
+        webView?.let {
+            webView.settings.javaScriptEnabled = true
+            webView.setWebViewClient(object : WebViewClient() {
                 override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                     super.onPageStarted(view, url, favicon)
                 }
@@ -71,31 +107,33 @@ open class LineWebViewController : View.OnClickListener, ILineWebViewController 
 
             })
 
-            it.setWebChromeClient(object : WebChromeClient() {
+            webView.setWebChromeClient(object : WebChromeClient() {
                 override fun onReceivedTitle(view: WebView?, title: String?) {
                     super.onReceivedTitle(view, title)
                     willReceivedTitle(view, title)
                 }
             })
 
-            it.addJavascriptInterface(JsRelay(), "android")
+            webView.addJavascriptInterface(JsRelay(), "android")
 
-            it.loadUrl(URL)
+            webView.loadUrl(URL)
         }
     }
 
-    override fun back() {
-        mWebView?.let {
-            if (it.canGoBack()) {
-                it.goBack()
-            }
+    inner class JsRelay {
+        @JavascriptInterface
+        fun getStampUrl(imageUrl: String?) {
+            mSelectStampUrl = imageUrl
+            handleStamp(imageUrl)
         }
-    }
 
-    override fun onClick(view: View?) {
-        when(view?.id) {
-            R.id.button_get_url -> {
-                mWebView?.loadUrl(JS_GET_STAMP)
+        private fun handleStamp(imageUrl: String?) {
+            Handler(Looper.getMainLooper()).post {
+                mModalStamp?.let {
+                    it.visibility = View.VISIBLE
+                    val stampView: ImageView = it.findViewById(R.id.image_stamp) as ImageView
+                    Glide.with(mModalStamp?.context).load(imageUrl).into(stampView)
+                }
             }
         }
     }
