@@ -5,8 +5,6 @@
               android:orientation="vertical"
              tools:context="com.example.shsato.linestampparser.fragment.LineFragment">
 
-    <include layout="@layout/webview_header"/>
-
     <WebView
         android:id="@+id/line_web_view"
         android:layout_width="match_parent"
